@@ -1,4 +1,5 @@
-﻿using HotelBediaX.Domain.Entities;
+﻿using HotelBediaX.Application.UseCases.Common;
+using HotelBediaX.Domain.Entities;
 
 namespace HotelBediaX.Application.Interfaces
 {
@@ -6,7 +7,7 @@ namespace HotelBediaX.Application.Interfaces
     {
         Task<int> AddAsync(Destination destination);
         Task<Destination?> GetByIdAsync(int id);
-        Task<List<Destination>> GetAllAsync(string? filter = null);
+        Task<Pagination<Destination>> GetAllAsync(int pageNumber, int pageSize, string? filter);
         Task UpdateAsync(Destination destination);
         Task DeleteAsync(int id);
     }

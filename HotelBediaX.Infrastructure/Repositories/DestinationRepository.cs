@@ -1,4 +1,5 @@
 ﻿using HotelBediaX.Application.Interfaces;
+using HotelBediaX.Application.UseCases.Common;
 using HotelBediaX.Domain.Entities;
 using HotelBediaX.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -26,18 +27,42 @@ namespace HotelBediaX.Infrastructure.Repositories
             }
         }
 
-        public async Task<List<Destination>> GetAllAsync(string? filter = null)
+        public async Task<Pagination<Destination>> GetAllAsync(
+            int pageNumber = 1,
+            int pageSize = 10,
+            string? filter = null)
         {
             var query = _context.Destinations.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
+                var normalizedFilter = filter.Trim().ToLower();
+
                 query = query.Where(d =>
-                    d.Name.Contains(filter) || d.CountryCode.Contains(filter));
+                    d.Name.ToLower().Contains(normalizedFilter) ||
+                    d.CountryCode.ToLower().Contains(normalizedFilter) ||
+                    (d.Description != null && d.Description.ToLower().Contains(normalizedFilter)) ||
+                    d.Type.ToString().ToLower().Contains(normalizedFilter));
             }
 
-            return await query.ToListAsync();
+            var totalElements = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(d => d.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new Pagination<Destination>
+            {
+                Content = items,
+                TotalElements = totalElements,
+                TotalPages = (int)Math.Ceiling(totalElements / (double)pageSize),
+                Size = pageSize,
+                Number = pageNumber
+            };
         }
+
 
         public async Task<Destination?> GetByIdAsync(int id)
         {

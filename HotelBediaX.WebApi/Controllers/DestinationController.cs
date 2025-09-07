@@ -37,11 +37,15 @@ public class DestinationController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] string? filter)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] string? filter,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var results = await _getAll.ExecuteAsync(filter);
+        var results = await _getAll.ExecuteAsync(pageNumber, pageSize, filter);
         return Ok(results);
     }
+
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateDestination(int id, [FromBody] UpdateDto dto)
