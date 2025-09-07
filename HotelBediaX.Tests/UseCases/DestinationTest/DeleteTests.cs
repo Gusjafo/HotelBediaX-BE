@@ -15,7 +15,11 @@ namespace HotelBediaX.Tests.UseCases.DestinationTest
             // Arrange
             var mockRepo = new Mock<IDestinationRepository>();
             mockRepo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(new Destination());
+                    .ReturnsAsync(new Destination
+                    {
+                        Name = "Sample Destination",
+                        CountryCode = "US"
+                    });
             mockRepo.Setup(r => r.DeleteAsync(1, It.IsAny<CancellationToken>()))
                     .Returns(Task.CompletedTask);
             var useCase = new DeleteUseCase(mockRepo.Object);
