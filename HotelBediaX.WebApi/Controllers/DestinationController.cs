@@ -72,8 +72,8 @@ public class DestinationController(
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        await _deleteUseCase.ExecuteAsync(id, cancellationToken);
-        return NoContent();
+        var deleted = await _deleteUseCase.ExecuteAsync(id, cancellationToken);
+        return deleted ? NoContent() : NotFound();
     }
 }
 
