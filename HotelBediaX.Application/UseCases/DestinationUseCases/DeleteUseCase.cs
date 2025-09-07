@@ -6,9 +6,14 @@ namespace HotelBediaX.Application.UseCases.DestinationUseCases
     {
         private readonly IDestinationRepository _repository = repository;
 
-        public async Task ExecuteAsync(int id)
+        public async Task<bool> ExecuteAsync(int id)
         {
+            var destination = await _repository.GetByIdAsync(id);
+            if (destination is null)
+                return false;
+
             await _repository.DeleteAsync(id);
+            return true;
         }
     }
 }

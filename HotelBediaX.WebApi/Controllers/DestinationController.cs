@@ -70,7 +70,7 @@ public class DestinationController(
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        await _deleteUseCase.ExecuteAsync(id);
-        return NoContent();
+        var deleted = await _deleteUseCase.ExecuteAsync(id);
+        return deleted ? NoContent() : NotFound();
     }
 }
