@@ -7,11 +7,11 @@ namespace HotelBediaX.WebApi.DI;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddProjectServices(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddProjectServices(this IServiceCollection services, IConfiguration _)
     {
-        // Repositorio
+        // Database
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
+            options.UseInMemoryDatabase("HotelBediaXDb"));
 
         // Repositorio
         services.AddScoped<IDestinationRepository, DestinationRepository>();
