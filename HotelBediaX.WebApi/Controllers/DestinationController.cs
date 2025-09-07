@@ -1,14 +1,15 @@
-﻿using HotelBediaX.Application.UseCases.DestinationUseCases;
+using HotelBediaX.Application.UseCases.DestinationUseCases;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
 namespace HotelBediaX.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class DestinationController(
-    CreateUseCase createUseCase, 
-    GetByIdUseCase getById, 
-    GetAllUseCase getAll, 
+    CreateUseCase createUseCase,
+    GetByIdUseCase getById,
+    GetAllUseCase getAll,
     UpdateUseCase updateUseCase,
     DeleteUseCase deleteUseCase
     ) : ControllerBase
@@ -20,19 +21,19 @@ public class DestinationController(
     private readonly DeleteUseCase _deleteUseCase = deleteUseCase;
 
     [HttpPost]
-    public async Task<IActionResult> CreateDestination([FromBody] CreateDto dto)
+    public async Task<IActionResult> CreateDestination([FromBody] CreateDto dto, CancellationToken cancellationToken)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var id = await _createUseCase.ExecuteAsync(dto);
+        var id = await _createUseCase.ExecuteAsync(dto, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id }, new { id });
     }
 
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
     {
-        var result = await _getById.ExecuteAsync(id);
+        var result = await _getById.ExecuteAsync(id, cancellationToken);
         return result is not null ? Ok(result) : NotFound();
     }
 
@@ -40,15 +41,16 @@ public class DestinationController(
     public async Task<IActionResult> GetAll(
         [FromQuery] string? filter,
         [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10)
+        [FromQuery] int pageSize = 10,
+        CancellationToken cancellationToken = default)
     {
-        var results = await _getAll.ExecuteAsync(pageNumber, pageSize, filter);
+        var results = await _getAll.ExecuteAsync(pageNumber, pageSize, filter, cancellationToken);
         return Ok(results);
     }
 
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateDestination(int id, [FromBody] UpdateDto dto)
+    public async Task<IActionResult> UpdateDestination(int id, [FromBody] UpdateDto dto, CancellationToken cancellationToken)
     {
         if (id != dto.Id)
             return BadRequest("ID in URL and body do not match.");
@@ -58,7 +60,7 @@ public class DestinationController(
 
         try
         {
-            await _updateUseCase.ExecuteAsync(dto);
+            await _updateUseCase.ExecuteAsync(dto, cancellationToken);
             return NoContent();
         }
         catch (InvalidOperationException ex)
@@ -68,9 +70,10 @@ public class DestinationController(
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        var deleted = await _deleteUseCase.ExecuteAsync(id);
+        var deleted = await _deleteUseCase.ExecuteAsync(id, cancellationToken);
         return deleted ? NoContent() : NotFound();
     }
 }
+
