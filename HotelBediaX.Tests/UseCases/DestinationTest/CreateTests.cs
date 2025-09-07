@@ -4,6 +4,7 @@ using HotelBediaX.Application.UseCases.DestinationUseCases;
 using HotelBediaX.Domain.Enums;
 using HotelBediaX.Domain.Entities;
 using Moq;
+using System.Threading;
 
 namespace HotelBediaX.Tests.UseCases.DestinationTest
 {
