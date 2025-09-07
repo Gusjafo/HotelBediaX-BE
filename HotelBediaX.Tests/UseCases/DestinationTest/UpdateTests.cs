@@ -4,6 +4,7 @@ using HotelBediaX.Application.UseCases.DestinationUseCases;
 using HotelBediaX.Domain.Entities;
 using HotelBediaX.Domain.Enums;
 using Moq;
+using System.Threading;
 
 namespace HotelBediaX.Tests.UseCases.DestinationTest
 {
@@ -23,8 +24,10 @@ namespace HotelBediaX.Tests.UseCases.DestinationTest
                 CreatedDate = DateTime.UtcNow
             };
             var mockRepo = new Mock<IDestinationRepository>();
-            mockRepo.Setup(r => r.GetByIdAsync(existing.Id)).ReturnsAsync(existing);
-            mockRepo.Setup(r => r.UpdateAsync(It.IsAny<Destination>())).Returns(Task.CompletedTask);
+            mockRepo.Setup(r => r.GetByIdAsync(existing.Id, It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(existing);
+            mockRepo.Setup(r => r.UpdateAsync(It.IsAny<Destination>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.CompletedTask);
             var useCase = new UpdateUseCase(mockRepo.Object);
 
             var dto = new UpdateDto
@@ -37,10 +40,10 @@ namespace HotelBediaX.Tests.UseCases.DestinationTest
             };
 
             // Act
-            await useCase.ExecuteAsync(dto);
+            await useCase.ExecuteAsync(dto, CancellationToken.None);
 
             // Assert
-            mockRepo.Verify(r => r.GetByIdAsync(existing.Id), Times.Once);
+            mockRepo.Verify(r => r.GetByIdAsync(existing.Id, It.IsAny<CancellationToken>()), Times.Once);
             mockRepo.Verify(r => r.UpdateAsync(It.Is<Destination>(d =>
                 d.Id == dto.Id &&
                 d.Name == dto.Name &&
@@ -48,7 +51,7 @@ namespace HotelBediaX.Tests.UseCases.DestinationTest
                 d.Description == dto.Description &&
                 d.Type == dto.Type &&
                 d.UpdatedDate != default
-            )), Times.Once);
+            ), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

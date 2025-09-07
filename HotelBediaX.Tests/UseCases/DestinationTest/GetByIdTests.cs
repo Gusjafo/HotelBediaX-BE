@@ -4,6 +4,7 @@ using HotelBediaX.Application.UseCases.DestinationUseCases;
 using HotelBediaX.Domain.Entities;
 using HotelBediaX.Domain.Enums;
 using Moq;
+using System.Threading;
 
 namespace HotelBediaX.Tests.UseCases.DestinationTest
 {
@@ -22,15 +23,16 @@ namespace HotelBediaX.Tests.UseCases.DestinationTest
                 Type = DestinationType.Beach
             };
             var mockRepo = new Mock<IDestinationRepository>();
-            mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(expected);
+            mockRepo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(expected);
             var useCase = new GetByIdUseCase(mockRepo.Object);
 
             // Act
-            var result = await useCase.ExecuteAsync(1);
+            var result = await useCase.ExecuteAsync(1, CancellationToken.None);
 
             // Assert
             result.Should().Be(expected);
-            mockRepo.Verify(r => r.GetByIdAsync(1), Times.Once);
+            mockRepo.Verify(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
