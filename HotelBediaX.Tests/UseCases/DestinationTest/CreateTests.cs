@@ -7,7 +7,7 @@ using Moq;
 
 namespace HotelBediaX.Tests.UseCases.DestinationTest
 {
-    public class CreateeTests
+    public class CreateTests
     {
         [Fact]
         public async Task Should_Call_Repository_And_Return_Id()
