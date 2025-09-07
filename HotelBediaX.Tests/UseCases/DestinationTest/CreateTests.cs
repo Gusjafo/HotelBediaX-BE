@@ -14,7 +14,7 @@ namespace HotelBediaX.Tests.UseCases.DestinationTest
         {
             // Arrange
             var mockRepo = new Mock<IDestinationRepository>();
-            mockRepo.Setup(r => r.AddAsync(It.IsAny<Destination>())).ReturnsAsync(1);
+            mockRepo.Setup(r => r.AddAsync(It.IsAny<Destination>(), It.IsAny<CancellationToken>())).ReturnsAsync(1);
 
             var useCase = new CreateUseCase(mockRepo.Object);
 
@@ -27,11 +27,11 @@ namespace HotelBediaX.Tests.UseCases.DestinationTest
             };
 
             // Act
-            var id = await useCase.ExecuteAsync(command);
+            var id = await useCase.ExecuteAsync(command, CancellationToken.None);
 
             // Assert
             id.Should().Be(1);
-            mockRepo.Verify(r => r.AddAsync(It.IsAny<Destination>()), Times.Once);
+            mockRepo.Verify(r => r.AddAsync(It.IsAny<Destination>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
